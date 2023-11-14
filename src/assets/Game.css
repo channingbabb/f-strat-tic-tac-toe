@@ -1,0 +1,16 @@
+.game-boards {
+    display: flex;
+    justify-content: center;
+}
+.game {
+    flex:1;
+}
+.game-info {
+    margin-left: 20px;
+}
+.game-text-info {
+    margin-bottom: 10px;
+    color: black;
+    font-weight: 600;
+    margin-left:auto;
+}
