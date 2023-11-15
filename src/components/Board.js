@@ -59,7 +59,7 @@ class Board extends Component {
                     emptySquares.push(i);
                 }
             }
-            // choose random square from empty squares
+            // choose random square from empty squares /
             const randomIndex = Math.floor(Math.random() * emptySquares.length);
             const randomSquare = emptySquares[randomIndex];
             squares[randomSquare] = "O";
