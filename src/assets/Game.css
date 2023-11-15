@@ -1,6 +1,6 @@
 .game-boards {
     display: flex;
-    justify-content: center;
+    flex-wrap: wrap;
 }
 .game {
     flex:1;
