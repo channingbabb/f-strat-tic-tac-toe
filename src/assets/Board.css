@@ -9,13 +9,6 @@
     margin-left:80px;
     margin-top: 80px;
 }
-.rowContainer {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    margin: 10px;
-}
 .disabled {
     background-color: rgba(0, 0, 0, 0.1);
     filter: brightness(70%);
@@ -40,4 +33,20 @@
 .boardContainer{
     
   flex: 1 0 33%; /* explanation below */
+}
+
+.board-row{
+    display:flex;
+    flex-direction:row;
+    flex: 1 0 33%; /* explanation below */
+}
+.rowContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+    flex: 1 0 99%; /* explanation below */
+    flex-wrap: wrap;
+    max-width: 470px;
 }

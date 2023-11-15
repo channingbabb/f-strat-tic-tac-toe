@@ -1,8 +1,8 @@
-import React, { Component } from "react";
+import React, { Component, PureComponent } from "react";
 import "../assets/Board.css";
 import Square from "./Cell";
 
-class Board extends Component {
+class Board extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -10,104 +10,160 @@ class Board extends Component {
       xIsNext: true,
       done: false,
       thinking: false,
+      boardIndex: this.props.key,
+      positions: {
+        0: "null",
+        1: "null",
+        2: "null",
+        3: "null",
+        4: "null",
+        5: "null",
+        6: "null",
+        7: "null",
+        8: "null",
+      },
     };
   }
 
   componentDidMount() {
     if (this.props.aiChooses) {
-        console.log("HERE")
-        const squares = this.state.squares.slice();
-        this.setState({ thinking: true });
-        setTimeout(() => {
-            // AI makes a random move for O
-            const emptySquares = squares.reduce((acc, val, idx) => {
-                if (!val) acc.push(idx);
-                return acc;
-            }, []);
-            const randomIndex = Math.floor(Math.random() * emptySquares.length);
-            const randomSquare = emptySquares[randomIndex];
-            squares[randomSquare] = "O";
-            this.setState({
-                squares: squares,
-                xIsNext: !this.state.xIsNext,
-            });
-            const newWinner = calculateWinner(squares);
-            if (newWinner) {
-                this.props.onClick(newWinner, randomIndex);
-            } else if (squares.every((square) => square !== null)) {
-                this.props.onClick("CAT", randomIndex);
-            } else {
-                this.props.onClick(null, randomIndex);
-            }
-            this.setState({ thinking: false });
-        }, 500);
+      console.log("HERE");
+      const squares = this.state.squares;
+      this.setState({ thinking: true });
+      setTimeout(() => {
+        // AI makes a random move for O
+        const emptySquares = squares.reduce((acc, val, idx) => {
+          if (!val) acc.push(idx);
+          return acc;
+        }, []);
+        const randomIndex = Math.floor(Math.random() * emptySquares.length);
+        const randomSquare = emptySquares[randomIndex];
+        squares[randomSquare] = "O";
+        const newPositions = this.state.positions;
+        newPositions.randomSquare = "O";
+        this.setState({
+          squares: squares,
+          xIsNext: !this.state.xIsNext,
+          positions: newPositions,
+        });
+        const newWinner = calculateWinner(squares);
+        if (newWinner) {
+          this.props.onClick(
+            newPositions,
+            this.props.key,
+            newWinner,
+            randomIndex
+          );
+        } else if (squares.every((square) => square !== null)) {
+          this.props.onClick(newPositions, this.props.key, "CAT", randomIndex);
+        } else {
+          this.props.onClick(newPositions, this.props.key, null, randomIndex);
+        }
+        this.setState({ thinking: false });
+      }, 500);
+    
+      this.props.setBoardData(this.state.positions);
     }
   }
 
   componentDidUpdate(prevProps) {
-    console.log(prevProps);
-    console.log(this.props);
-    if (this.props.aiChooses && (prevProps.aiChooses !== this.props.aiChooses)) {
-        console.log("HERE")
-        const squares = this.state.squares.slice();
-        this.setState({ thinking: true });
-        setTimeout(() => {
-            // AI makes a random move for O
-            var emptySquares = [];
-            for (var i = 0; i < squares.length; i++) {
-                if (!squares[i]) {
-                    emptySquares.push(i);
-                }
-            }
-            // choose random square from empty squares
-            const randomIndex = Math.floor(Math.random() * emptySquares.length);
-            const randomSquare = emptySquares[randomIndex];
-            squares[randomSquare] = "O";
-            this.setState({
-                squares: squares,
-                xIsNext: !this.state.xIsNext,
-            });
-            const newWinner = calculateWinner(squares);
-            if (newWinner) {
-                this.props.onClick(newWinner, randomIndex);
-            } else if (squares.every((square) => square !== null)) {
-                this.props.onClick("CAT", randomIndex);
-            } else {
-                this.props.onClick(null, randomIndex);
-            }
-            this.props.setChosenBoard(randomIndex);
-            console.log("set chosen board " + randomIndex);
-            this.setState({ thinking: false });
-        }, 500);
+    if (prevProps.canChoose !== this.props.canChoose) {
+      this.props.setBoardData(this.state.positions);
+    }
+    // console.log(prevProps);
+    // console.log(this.props);
+    if (this.props.aiChooses && prevProps.aiChooses !== this.props.aiChooses) {
+      const squares = this.state.squares;
+      this.setState({ thinking: true });
+      setTimeout(() => {
+        // AI makes a random move for O
+        var emptySquares = [];
+        for (var i = 0; i < squares.length; i++) {
+          if (!squares[i]) {
+            emptySquares.push(i);
+          }
+        }
+        console.log(emptySquares);
+        var randomIndex = Math.floor(Math.random() * emptySquares.length);
+        var randomSquare = emptySquares[randomIndex];
+        console.log(randomSquare);
+        squares[randomSquare] = "O";
+        const newPositions = this.state.positions;
+        newPositions[randomSquare] = "O";
+        this.setState({ newPositions: newPositions });
+        const newWinner = calculateWinner(squares);
+        if (newWinner) {
+          this.props.onClick(
+            this.state.positions,
+            this.props.key,
+            newWinner,
+            randomIndex
+          );
+        } else if (squares.every((square) => square !== null)) {
+          this.props.onClick(
+            this.state.positions,
+            this.props.key,
+            "CAT",
+            randomIndex
+          );
+        } else {
+          this.props.onClick(
+            this.state.positions,
+            this.props.key,
+            null,
+            randomIndex
+          );
+        }
+        this.setState({
+          squares: squares,
+          xIsNext: !this.state.xIsNext,
+          positions: newPositions,
+        });
+        var chosenIndex = parseInt(randomIndex);
+        this.props.setChosenBoard(chosenIndex);
+        console.log("set chosen board " + randomSquare);
+        this.setState({ thinking: false });
+      }, 500);
+    
+      this.props.setBoardData(this.state.positions);
     }
   }
 
   handleClick(i) {
+    console.log("handle click " + i);
+    console.log(this.props.canChoose)
+    console.log(!this.props.aiChooses)
     if (!this.state.thinking && this.props.canChoose && !this.props.aiChooses) {
-        const squares = this.state.squares.slice();
-        if (calculateWinner(squares) || squares[i]) {
-            return;
-        }
-        squares[i] = this.state.xIsNext ? "X" : "O";
-        this.setState({
-            squares: squares,
-            xIsNext: !this.state.xIsNext,
-        });
+      const squares = this.state.squares;
+      if (calculateWinner(squares) || squares[i]) {
+        return;
+      }
+      squares[i] = "X";
+      const newPositions = this.state.positions;
+      newPositions[i] = "X";
+      this.setState({
+        squares: squares,
+        xIsNext: !this.state.xIsNext,
+        positions: newPositions,
+      });
 
-        const winner = calculateWinner(squares);
-        if (this.props.aiChooses) {
-
+      const winner = calculateWinner(squares);
+      if (this.props.aiChooses) {
+      } else {
+        if (winner) {
+          this.props.onClick(newPositions, this.props.key, winner, i);
+        } else if (squares.every((square) => square !== null)) {
+          this.props.onClick(newPositions, this.props.key, "CAT", i);
         } else {
-            if (winner) {
-                this.props.onClick(winner, i);
-            } else if (squares.every((square) => square !== null)) {
-                this.props.onClick("CAT", i);
-            } else {
-                this.props.onClick(null, i);
-            }
+          this.props.onClick(newPositions, this.props.key, null, i);
         }
+      }
+      this.props.setChosenBoard(parseInt(i));
+      console.log("set chosen board " + parseInt(i));
+    
+      this.props.setBoardData(this.state.positions);
     }
-}
+  }
 
   renderSquare(i) {
     return (
