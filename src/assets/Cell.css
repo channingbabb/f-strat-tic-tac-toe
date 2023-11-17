@@ -1,12 +1,18 @@
 .cell {
-    width: 80px;
-    height: 80px;
-    border: 1px solid black;
     display: flex;
-    justify-content: center;
     align-items: center;
-    font-size: 50px;
+    justify-content: center;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    font-size: 24px;
+    font-weight: bold;
     cursor: pointer;
-    transition: all 0.3s ease-in-out;
-    background-color: white;
+    user-select: none;
+    width: 100%; /* Fill the cell area */
+    height: 100%; /* Fill the cell area */
+    box-sizing: border-box; /* Include padding and borders in the width and height */
+}
+
+.cell:hover {
+    background-color: #eaeaea;
 }
