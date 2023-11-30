@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Board from "./Board";
 import "../assets/Game.css";
 import * as Constants from "../warehouse/constants";
+import Board from "./Board";
 
 const Game = () => {
   // Initialize board states and winners for each small board
@@ -12,6 +12,13 @@ const Game = () => {
   const [boardWinners, setBoardWinners] = useState(Array(9).fill(null));
   const [currentBoard, setCurrentBoard] = useState(null);
   const [currentPlayer, setCurrentPlayer] = useState("X");
+
+  const resetGame = () => {
+    setBoards(initialBoardState);
+    setBoardWinners(Array(9).fill(null));
+    setCurrentBoard(null);
+    setCurrentPlayer("X");
+  }
 
   // Function to check for winner in a board
   const checkWinner = (board) => {
@@ -71,13 +78,15 @@ const Game = () => {
           )
         );
         setBoards(newBoards);
-        setCurrentBoard(data[1].aiMovedTo);
-        // Check if the small board has a winner
-        const boardWinner = checkWinner(newBoards[boardIndex]);
+        const boardWinner = JSON.parse(data[2].boardsWon);
         if (boardWinner) {
-          const newBoardWinners = [...boardWinners];
-          newBoardWinners[boardIndex] = boardWinner;
-          setBoardWinners(newBoardWinners);
+          setBoardWinners(boardWinner);
+        }
+        // console.log(boardWinner[data[1].aiMovedTo])
+        if (boardWinner[data[1].aiMovedTo] == null) {
+          setCurrentBoard(data[1].aiMovedTo);
+        } else {
+          setCurrentBoard(null);
         }
 
         // Switch player
@@ -91,6 +100,7 @@ const Game = () => {
   return (
     <div className="game">
       <div className="status">Next player: {currentPlayer}</div>
+      <button onClick={() => resetGame()}>Reset Game</button>
       <div className="boards">
         {boards.map((boardState, index) => (
           <Board
