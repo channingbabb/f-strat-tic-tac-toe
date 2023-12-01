@@ -2,6 +2,11 @@ import React, { useState } from "react";
 import "../assets/Game.css";
 import * as Constants from "../warehouse/constants";
 import Board from "./Board";
+import Leaderboard from "./Leaderboard";
+import Cookies from "universal-cookie";
+import MoreInfo from "./MoreInfo";
+
+const cookie = new Cookies();
 
 const Game = () => {
   // Initialize board states and winners for each small board
@@ -12,35 +17,16 @@ const Game = () => {
   const [boardWinners, setBoardWinners] = useState(Array(9).fill(null));
   const [currentBoard, setCurrentBoard] = useState(null);
   const [currentPlayer, setCurrentPlayer] = useState("X");
+  const [gameOver, setGameOver] = useState(false);
+  const [xwins, setXwins] = useState(cookie.get("x-won"));
+  const [ywins, setYwins] = useState(cookie.get("o-won"));
+  const [draws, setDraws] = useState(cookie.get("draws"));
 
   const resetGame = () => {
     setBoards(initialBoardState);
     setBoardWinners(Array(9).fill(null));
     setCurrentBoard(null);
     setCurrentPlayer("X");
-  }
-
-  // Function to check for winner in a board
-  const checkWinner = (board) => {
-    // Winning combinations
-    const lines = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8], // Rows
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8], // Columns
-      [0, 4, 8],
-      [2, 4, 6], // Diagonals
-    ];
-
-    for (let i = 0; i < lines.length; i++) {
-      const [a, b, c] = lines[i];
-      if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-        return board[a];
-      }
-    }
-    return null;
   };
 
   // Function to handle move
@@ -89,6 +75,15 @@ const Game = () => {
           setCurrentBoard(null);
         }
 
+        if (data[3].gameWon !== "null") {
+          alert("Game Won by " + data[3].gameWon);
+          setGameOver(true);
+          cookie.set(
+            data[3].gameWon.toLowerCase() + "_won",
+            cookie.get(data[3].gameWon.toLowerCase() + "_won") + 1
+          );
+        }
+
         // Switch player
         setCurrentPlayer(currentPlayer === "X" ? "O" : "X");
       })
@@ -98,22 +93,32 @@ const Game = () => {
   };
   // Render game boards
   return (
-    <div className="game">
-      <div className="status">Next player: {currentPlayer}</div>
-      <button onClick={() => resetGame()}>Reset Game</button>
-      <div className="boards">
-        {boards.map((boardState, index) => (
-          <Board
-            key={index}
-            state={boardState}
-            onMove={(cellIndex) => handleMove(index, cellIndex)}
-            currentPlayer={currentPlayer}
-            enabled={currentBoard === null || currentBoard === index}
-            winner={boardWinners[index]}
-          />
-        ))}
+    <>
+      <div className="leaderboard">
+        <Leaderboard xwin={xwins} ywins={ywins} draws={draws}></Leaderboard>
       </div>
-    </div>
+      <div className="game">
+        <div className="header">
+          <div className="status">Next player: {currentPlayer}</div>
+          <button onClick={() => resetGame()} className="reset-button">Reset Game</button>
+        </div>
+        <div className="boards">
+          {boards.map((boardState, index) => (
+            <Board
+              key={index}
+              state={boardState}
+              onMove={(cellIndex) => handleMove(index, cellIndex)}
+              currentPlayer={currentPlayer}
+              enabled={
+                (currentBoard === null || currentBoard === index) && !gameOver
+              }
+              winner={boardWinners[index]}
+            />
+          ))}
+        </div>
+        <MoreInfo></MoreInfo>
+      </div>
+    </>
   );
 };
 
