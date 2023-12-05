@@ -1,5 +1,5 @@
-import Cookies from 'universal-cookie';
 import React from 'react';
+import Cookies from 'universal-cookie';
 
 const cookie = new Cookies();
 
@@ -22,6 +22,15 @@ class Leaderboard extends React.Component {
             }
         });
 
+    }
+
+    componentDidMount() {
+
+        this.cookie_names.forEach(name => {
+            if (this.getCookie(name) !== this.getVal(name)) {
+                this.setCookieState(name, this.getCookie(name));
+            }
+        });
     }
 
     componentDidUpdate() {
