@@ -4,9 +4,9 @@ import '../assets/MoreInfo.css';
 const MoreInfo = () => {
     return (
         <div className="more-info">
-            <h2>Ultimate Tic Tac Toe</h2>
+            <h2>Strategic Tic Tac Toe</h2>
             <p>
-                Ultimate Tic Tac Toe is a variation of the classic Tic Tac Toe game, where the board is composed of 9 smaller Tic Tac Toe boards.
+                Strategic Tic Tac Toe is a variation of the classic Tic Tac Toe game, where the board is composed of 9 smaller Tic Tac Toe boards.
                 The objective is to win three smaller Tic Tac Toe boards in a row, either horizontally, vertically, or diagonally.
             </p>
             <h3>Rules:</h3>
