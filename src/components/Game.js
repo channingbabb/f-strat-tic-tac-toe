@@ -1,9 +1,9 @@
 import React, { useState } from "react";
+import Cookies from "universal-cookie";
 import "../assets/Game.css";
 import * as Constants from "../warehouse/constants";
 import Board from "./Board";
 import Leaderboard from "./Leaderboard";
-import Cookies from "universal-cookie";
 import MoreInfo from "./MoreInfo";
 
 const cookie = new Cookies();
@@ -99,7 +99,6 @@ const Game = () => {
       </div>
       <div className="game">
         <div className="header">
-          <div className="status">Next player: {currentPlayer}</div>
           <button onClick={() => resetGame()} className="reset-button">Reset Game</button>
         </div>
         <div className="boards">
